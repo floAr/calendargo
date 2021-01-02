@@ -8,6 +8,8 @@ Given a setting.json the tool outputs a ong file per month, as well as a single 
 * Automatically fill blank days before and after the month to have a nice box layout and always the same first weekday
 * Configure layouts and other things on the fly
 
+## Usage
+Pull the repository, edit the `setting.json` if needed and run `go run .\remarkableCalendarGenerator.go`
 
 ## Customize
 
