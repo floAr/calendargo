@@ -6,6 +6,8 @@ Given a setting.json the tool outputs a ong file per month, as well as a single 
 ## Feature
 Generate monthly calendars in the likes of:
 
+![example calendar for april](https://github.com/floAr/CalenderGeneratorGo/blob/main/example.png "example calendar for april")
+
 
 ## Customize
 
