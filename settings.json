@@ -1,0 +1,11 @@
+{
+    "width"  : 1404,
+    "height"  : 1872,
+    "marginLeft"  : 130,
+    "marginRight"  : 10,
+    "marginTop"  : 5,
+    "marginBottom"  : 200,
+    "startOfTheWeek"  : 1,
+    "headerFontSize":25,
+    "headerFont": "arial",
+}
