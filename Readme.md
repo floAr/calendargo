@@ -4,9 +4,7 @@ This tool generates monthly calendar templates to print or use with devices like
 Given a setting.json the tool outputs a ong file per month, as well as a single pdf containign all twelve months.
 
 ## Feature
-Generate monthly calendars in the likes of:
-
-![example calendar for april](https://github.com/floAr/CalenderGeneratorGo/blob/main/example.png "example calendar for april")
+Generate monthly calendars in the likes of [example calendar for april](https://github.com/floAr/CalenderGeneratorGo/blob/main/example.png "example calendar for april")
 
 
 ## Customize
