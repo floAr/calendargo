@@ -14,6 +14,7 @@ import (
 
 // Settings is a structure to pass in every layout related property from outside
 type Settings struct {
+	Year   int
 	Width  int
 	Height int
 
@@ -146,7 +147,7 @@ func generateMonth(year int, month time.Month) {
 // Generate creates a set of calendar templates for the given settings
 func Generate(set Settings) {
 	settings = set
-	year := 2021
+	year := settings.Year
 
 	fontPath, err := findfont.Find(settings.HeaderFont + ".ttf")
 	if err != nil {

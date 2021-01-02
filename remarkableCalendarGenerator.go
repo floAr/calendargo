@@ -19,7 +19,7 @@ func getAllImages(year int) ([]string, error) {
 		return files, err
 	}
 	for _, file := range fileInfo {
-		if strings.Contains(file.Name(), ".png") && strings.Contains(file.Name(), strconv.Itoa(year)) {
+		if strings.Contains(file.Name(), ".png") && strings.Contains(file.Name(), strconv.Itoa(year)+"_") {
 			files = append(files, file.Name())
 		}
 	}
@@ -44,7 +44,7 @@ func main() {
 	// generate the calendar pages
 	generator.Generate(settings)
 
-	images, err := getAllImages(2021)
+	images, err := getAllImages(settings.Year)
 	if err != nil {
 		fmt.Println("error:", err)
 	}
@@ -56,6 +56,6 @@ func main() {
 		pdf.AddPage()
 		pdf.Image(images[i], 0, 0, gopdf.PageSizeA4)
 	}
-	pdf.WritePdf("2021.pdf")
+	pdf.WritePdf(strconv.Itoa(settings.Year) + ".pdf")
 
 }

@@ -1,4 +1,5 @@
 {
+    "year" : 2021,
     "width"  : 1404,
     "height"  : 1872,
     "marginLeft"  : 130,
@@ -7,5 +8,5 @@
     "marginBottom"  : 200,
     "startOfTheWeek"  : 1,
     "headerFontSize":25,
-    "headerFont": "arial",
+    "headerFont": "arial"
 }
