@@ -29,11 +29,10 @@ Editing the setting.json allows to specify how the calendar should be layouted. 
 ~~~
 `year` is used to specify the year, `width` and `height` define the total resoltuion of the genrated images (pdf is always A4 at the moment), the `margin` values specify how many empty pixels should be included on each border, `startOfTheWeek` allows to change the first day of the week (0 => Sunday, 1 =S> Monday...), `headerFontSize`specifies the size of the header font (and also its spacing) and `headerFont` the font to use (which must be installed on your system).
 
-
-Generate templates for each month of the year using gg (https://github.com/fogleman/gg) and also embed events from online calendar sources. 
-
-* Generate a set of 12 templates for a given year
-* Push those template to the remarkable (and remove old ones)
-* Pull events from (different) online calendar sources
-* Embed online events into templates
-* Allow to run run update as a cron and update the templates accordingly
+## Ideas
+* Combine with other apis to automatically populate the calender with
+   * Events from online calendar
+   * Nice things to fill the blanks (quotes / images)
+* Add more configuration options (Color, different fonts for header and body)
+* Build a more stable layouting system (% margins)
+* Automatically push to RM2
