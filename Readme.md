@@ -3,6 +3,8 @@
 This tool generates monthly calendar templates to print or use with devices like the reMarkable2.
 Given a setting.json the tool outputs a ong file per month, as well as a single pdf containign all twelve months.
 
+*If you are only interested int the images / pdf for 2021 have a look in the [output folder](https://github.com/floAr/CalenderGeneratorGo/tree/main/output)*
+
 ## Feature
 * Generate monthly calendars in the likes of [example calendar for april](https://github.com/floAr/CalenderGeneratorGo/blob/main/example.png "example calendar for april")
 * Automatically fill blank days before and after the month to have a nice box layout and always the same first weekday
