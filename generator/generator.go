@@ -12,6 +12,15 @@ import (
 	"github.com/jinzhu/now"
 )
 
+type CalendarWeek string
+
+const (
+	None  CalendarWeek = "None"
+	Right              = "Right"
+	Left               = "Left"
+	Both               = "Both"
+)
+
 // Settings is a structure to pass in every layout related property from outside
 type Settings struct {
 	Year   int
@@ -26,8 +35,10 @@ type Settings struct {
 	HeaderFont     string
 	HeaderFontSize int
 
-	CellHeight     float64
 	StartOfTheWeek time.Weekday
+
+	CalendarWeek      CalendarWeek
+	CalendarWeekColor float64
 }
 
 var settings Settings
@@ -35,6 +46,12 @@ var settings Settings
 var cellWidth float64 = 0
 var cellHeight float64 = 0
 var font *truetype.Font
+
+// Layout functions
+// sizeCalendarWeek returns the dimensions for the calendar week element
+func sizeCalendarWeek() (float64, float64) {
+	return float64(settings.HeaderFontSize) * 2, float64(settings.HeaderFontSize) * 2
+}
 
 func drawCell(x float64, y float64, date int, dc *gg.Context) {
 	dc.SetRGB(0, 0, 0)
@@ -63,6 +80,11 @@ func generateMonthGrid(year int, month time.Month, startDay time.Weekday, dc *gg
 		leadingEmptyDays++
 	}
 
+	wCW, _ := sizeCalendarWeek()
+	var offsetCW float64 = 0
+	if settings.CalendarWeek == Left || settings.CalendarWeek == Both {
+		offsetCW = wCW
+	}
 	// Draw cells
 	x := 0
 	y := 0
@@ -70,11 +92,31 @@ func generateMonthGrid(year int, month time.Month, startDay time.Weekday, dc *gg
 	for i := 0; i < dayCount+leadingEmptyDays; i++ {
 		x = i % 7
 		y = i / 7
-		drawCell(cellWidth*float64(x), cellHeight*float64(y), i+1-leadingEmptyDays, dc)
+		_, week := t.AddDate(0, 0, i-leadingEmptyDays).ISOWeek()
+
+		// generate left cell for calender week if we need it
+		if (settings.CalendarWeek == Left || settings.CalendarWeek == Both) && x == 0 {
+			dc.SetRGB(settings.CalendarWeekColor, settings.CalendarWeekColor, settings.CalendarWeekColor)
+			dc.DrawRectangle(0, cellHeight*float64(y), wCW, cellHeight)
+			dc.DrawStringAnchored(strconv.Itoa(week), wCW/2, cellHeight*float64(y)+cellHeight/2, 0.5, 0.5)
+
+			dc.Stroke()
+		}
+
+		drawCell(offsetCW+cellWidth*float64(x), cellHeight*float64(y), i+1-leadingEmptyDays, dc)
+
+		// generate right cell for calender week if we need it
+		if (settings.CalendarWeek == Right || settings.CalendarWeek == Both) && x == 6 {
+			dc.SetRGB(settings.CalendarWeekColor, settings.CalendarWeekColor, settings.CalendarWeekColor)
+			dc.DrawRectangle(offsetCW+cellWidth*7, cellHeight*float64(y), wCW, cellHeight)
+			dc.DrawStringAnchored(strconv.Itoa(week), offsetCW+cellWidth*7+wCW/2, cellHeight*float64(y)+cellHeight/2, 0.5, 0.5)
+			dc.SetRGB(0, 0, 0)
+			dc.Stroke()
+		}
 	}
 
 	for i := x + 1; i < 7; i++ {
-		drawCell(cellWidth*float64(i), cellHeight*float64(y), -1, dc)
+		drawCell(offsetCW+cellWidth*float64(i), cellHeight*float64(y), -1, dc)
 	}
 
 	dc.Translate(0, cellHeight*6)
@@ -100,12 +142,34 @@ func generateWeekHeader(startDay time.Weekday, dc *gg.Context) float64 {
 		}
 		offset++
 	}
-	for i := 0; i < 7; i++ {
-		dc.DrawStringAnchored(t.AddDate(0, 0, i+offset).Weekday().String(), float64(i)*cellWidth+cellWidth/2, float64(settings.HeaderFontSize), 0.5, 0.5)
-
-		dc.DrawRectangle(float64(i)*cellWidth, 0, cellWidth, float64(settings.HeaderFontSize)*2)
-		dc.SetRGB(0, 0, 0)
+	wCW, hCW := sizeCalendarWeek()
+	// generate left header for calender week if we need it
+	if settings.CalendarWeek == Left || settings.CalendarWeek == Both {
+		dc.SetRGB(settings.CalendarWeekColor, settings.CalendarWeekColor, settings.CalendarWeekColor)
+		dc.DrawStringAnchored("W", wCW/2, hCW/2, 0.5, 0.5)
+		dc.DrawRectangle(0, 0, wCW, hCW)
 		dc.Stroke()
+		dc.Translate(wCW, 0)
+	}
+
+	for i := 0; i < 7; i++ {
+		dc.SetRGB(0, 0, 0)
+		dc.DrawStringAnchored(t.AddDate(0, 0, i+offset).Weekday().String(), float64(i)*cellWidth+cellWidth/2, float64(settings.HeaderFontSize), 0.5, 0.5)
+		dc.DrawRectangle(float64(i)*cellWidth, 0, cellWidth, float64(settings.HeaderFontSize)*2)
+		dc.Stroke()
+	}
+
+	// generate right header for calender week if we need it
+	if settings.CalendarWeek == Right || settings.CalendarWeek == Both {
+		dc.SetRGB(settings.CalendarWeekColor, settings.CalendarWeekColor, settings.CalendarWeekColor)
+		dc.DrawStringAnchored("W", 7*cellWidth+wCW/2, hCW/2, 0.5, 0.5)
+		dc.DrawRectangle(7*cellWidth, 0, wCW, hCW)
+		dc.Stroke()
+
+	}
+	// we want to reset the indent we made for the left calender week
+	if settings.CalendarWeek == Left || settings.CalendarWeek == Both {
+		dc.Translate(-wCW, 0)
 	}
 	dc.Translate(0, float64(settings.HeaderFontSize)*2)
 	return float64(settings.HeaderFontSize) * 2
@@ -122,7 +186,16 @@ func monthToStringNr(month time.Month) string {
 func generateMonth(year int, month time.Month) {
 	// monthly logic
 	dc := gg.NewContext(settings.Width, settings.Height)
-	cellWidth = float64(settings.Width-settings.MarginLeft-settings.MarginRight) / 7
+	cwWidthTotal, _ := sizeCalendarWeek()
+	if settings.CalendarWeek == None {
+		cwWidthTotal = 0
+	} else {
+		if settings.CalendarWeek == Both {
+			cwWidthTotal = 2 * cwWidthTotal
+		}
+
+	}
+	cellWidth = (float64(settings.Width-settings.MarginLeft-settings.MarginRight) - cwWidthTotal) / 7
 
 	dc.SetRGB(1, 1, 1)
 	dc.Clear()
@@ -132,9 +205,11 @@ func generateMonth(year int, month time.Month) {
 	face := truetype.NewFace(font, &truetype.Options{Size: 48})
 	dc.SetFontFace(face)
 	mHeaderHeight := generateMonthHeader(year, month, dc)
-	dc.Translate(120, 0) // move to side for menue bar
+	dc.Translate(float64(settings.MarginLeft), 0) // move to side for menue bar
+
 	face = truetype.NewFace(font, &truetype.Options{Size: float64(settings.HeaderFontSize)})
 	dc.SetFontFace(face)
+
 	wHeaderHeight := generateWeekHeader(settings.StartOfTheWeek, dc)
 
 	cellHeight = (float64(settings.Height-settings.MarginTop-settings.MarginBottom) - wHeaderHeight - mHeaderHeight) / 6
@@ -164,6 +239,7 @@ func Generate(set Settings) {
 	if err != nil {
 		panic(err)
 	}
+
 	generateMonth(year, time.January)
 	generateMonth(year, time.February)
 	generateMonth(year, time.March)

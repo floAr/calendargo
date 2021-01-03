@@ -8,5 +8,8 @@
     "marginBottom"  : 200,
     "startOfTheWeek"  : 1,
     "headerFontSize":25,
-    "headerFont": "arial"
+    "headerFont": "arial",
+    // Defines if calender weeks shoudl be shown. Values: 'None', 'Right', 'Left' or 'Both'
+    "calendarWeek" :"Left" , 
+    "calendarWeekColor": 0.5  
 }
