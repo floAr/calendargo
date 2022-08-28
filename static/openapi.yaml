@@ -1,0 +1,62 @@
+# Calendago API Specification
+openapi: "3.1.0"
+info:
+  version: 'v0.0.1'
+  license: 
+    name: "MIT"
+    url: "https://github.com/zikani03/calendago"
+  description: Calendago API
+  title: Calendago API
+  contact:
+    name: Zikani Nyirenda Mwase
+    url: https://code.zikani.me
+    email: zikani.nmwase@ymail.com
+servers:
+  - url: 'http://localhost:3000'
+    description: Development Server
+paths:
+  "/generate/{year}":
+    post: 
+      operationId: GenerateCalendar
+      summary: Generate a Calendar 
+      requestBody: 
+        content: 
+          multipart/form-data: 
+            schema: 
+              properties: 
+                settings:
+                  type: string
+                  description: JSON String with settings
+                files:
+                  type: array
+      responses:
+        "200":
+          summary: Successfully generated PDF
+          description: Successfully generated PDF
+          content:
+            application/octet-stream: 
+              schema: 
+                contentMediaType: "application/pdf"
+        "400":
+          $ref: "#/components/responses/GeneralError"
+components: 
+  schemas:
+    GeneralError:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
+  responses:
+    NotFound:
+      description: Entity not found.
+    IllegalInput:
+      description: Illegal input for operation.
+    GeneralError:
+      description: General Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GeneralError'
