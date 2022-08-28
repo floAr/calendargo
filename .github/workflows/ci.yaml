@@ -1,0 +1,20 @@
+name: ci
+on:
+  push:
+    tags: [ "v*" ]
+    branches: [ main ]
+  pull_request:
+    branches: [ "*" ]
+jobs:
+  build:
+    name: build-and-test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-go@v2
+        with:
+          stable: true
+          go-version: 1.18.x
+      - uses: actions/checkout@v3
+      - name: run go mod
+        run: go mod tidy && go build
+      # - uses: zikani03/dblstd-action@v1

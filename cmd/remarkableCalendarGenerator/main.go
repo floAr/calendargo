@@ -8,8 +8,8 @@ import (
 	"strconv"
 	"strings"
 
-	"florianuhde.com/remarkableCalendarGenerator/generator"
 	"github.com/signintech/gopdf"
+	"github.com/zikani03/calendago/generator"
 	"muzzammil.xyz/jsonc"
 )
 
